@@ -1,0 +1,25 @@
+﻿<h3>New Task</h3>
+
+<EditForm Model="toDo" OnSubmit="HandleSubmit">
+	<div>
+		<label>
+			Done
+		</label>
+		<InputCheckbox @bind-Value="toDo.Done"/>
+	</div>
+	<div>
+		<label>
+			Description
+		</label>
+		<InputTextArea @bind-Value="toDo.Description" />
+	</div>
+</EditForm>
+
+@code {
+	private ToDo toDo = new ToDo();
+
+	private void HandleSubmit()
+	{
+		Console.WriteLine("DOTO: Submit!");
+	}
+}
