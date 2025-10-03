@@ -1,0 +1,32 @@
+services:
+  todolist:
+    image: ${DOCKER_REGISTRY-}todolist
+    build:
+      context: .
+      dockerfile: ToDoList/Dockerfile
+    depends_on:
+      - db
+    environment:
+       ConnectionStrings__Default: Server=db;Port=3306;Database=todolistdb;User=${MARIADB_USER};Password=${MARIADB_PASSWORD};
+  db:
+    image: mariadb:12.0
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: todolistdb
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    restart: unless-stopped
+    ports:
+      - 80
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: supersecretpassword
+    depends_on:
+      - db
+volumes:
+  dbdata:
