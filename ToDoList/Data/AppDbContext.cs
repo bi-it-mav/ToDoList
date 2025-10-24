@@ -7,6 +7,5 @@ namespace ToDoList.Data
     {
         public DbSet<ToDo> ToDos { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-        
     }
 }
