@@ -24,7 +24,7 @@ try
     );
 }
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(credentials.connectionString, credentials.serverVersion));
+builder.Services.AddDbContextFactory<AppDbContext>(options => options.UseMySql(credentials.connectionString, credentials.serverVersion));
 
 var app = builder.Build();
 
