@@ -45,10 +45,12 @@
 			var savedToDo = toDo;
 			toDo = new ToDo();
 			toDo.IsDone = savedToDo.IsDone;
-		} catch (Exception exception)
+		}
+		catch (Exception exception)
 		{
 			this.exception = exception;
-		} finally
+		}
+		finally
 		{
 			isBusy = false;
 		}
