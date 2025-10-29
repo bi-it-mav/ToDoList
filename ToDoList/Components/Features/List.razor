@@ -6,25 +6,15 @@
 	@if (toDos is null)
 	{
 		<div>Loading</div>
-	} else
+	}
+	else
 	{
 		<div class="container my-5">
             <div class="row row-cols-1 row-cols-md-3 g-4">
 				@foreach(var toDo in toDos)
 				{
 					<div class="col">
-						<div class="card h-100">
-							<div class="card-body">
-								<h5 class="card-title">@(toDo.IsDone ? "Done" : "To do")</h5>
-								<p class="card-text">@toDo.Description</p>
-							</div>
-							<div class="card-footer">
-								@if (@toDo.DueAt is not null)
-								{
-									<small class="text-muted">Due: @toDo.DueAt</small>
-								}
-							</div>
-						</div>
+						<Display ToDo="toDo" />
 					</div>
 				}
             </div>

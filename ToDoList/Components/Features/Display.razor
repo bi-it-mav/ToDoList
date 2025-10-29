@@ -1,6 +1,21 @@
-﻿<h3>Task</h3>
+﻿@inject IDbContextFactory<AppDbContext> AppDbContextFactory
+
+<div class="card h-100">
+	<div class="card-body">
+		<h5 class="card-title">@(ToDo.IsDone ? "Done" : "To do")</h5>
+		<p class="card-text">@ToDo.Description</p>
+	</div>
+	<div class="card-footer">
+		@if (@ToDo.DueAt is not null)
+		{
+			<small class="text-muted">Due: @ToDo.DueAt</small>
+		}
+	</div>
+	<button type="button" class="btn">Modify</button>
+</div>
+
 
 @code {
 	[Parameter]
-	public int id { get; set; }
+	public required ToDo ToDo { get; set; }
 }
