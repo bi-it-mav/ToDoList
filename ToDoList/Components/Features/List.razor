@@ -51,7 +51,7 @@
 		try
 		{
 			using var appDbContext = await AppDbContextFactory.CreateDbContextAsync();
-			toDos = await appDbContext.ToDos.ToListAsync();
+			toDos = await appDbContext.ToDos.OrderByDescending(toDo => toDo.LastModifiedAt).ToListAsync();
 		} catch (Exception exception)
 		{
 			this.exception = exception;
