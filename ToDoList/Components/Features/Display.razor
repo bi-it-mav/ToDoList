@@ -1,4 +1,4 @@
-﻿@inject IDbContextFactory<AppDbContext> AppDbContextFactory
+﻿@inject NavigationManager NavigationManager
 
 <div class="card h-100">
 	<div class="card-body">
@@ -11,11 +11,13 @@
 			<small class="text-muted">Due: @ToDo.DueAt</small>
 		}
 	</div>
-	<button type="button" class="btn">Modify</button>
+	<button type="button" @onclick="Modify" class="btn">Modify</button>
 </div>
 
 
 @code {
 	[Parameter]
 	public required ToDo ToDo { get; set; }
+
+	void Modify() => NavigationManager.NavigateTo($"/{ToDo.Id}");
 }

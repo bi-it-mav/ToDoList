@@ -1,0 +1,31 @@
+﻿@page "/{Id:int}"
+@inject IDbContextFactory<AppDbContext> AppDbContextFactory
+@inject NavigationManager NavigationManager
+
+
+<PageTitle>Modify</PageTitle>
+@if (ToDo is null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<Modify Todo="ToDo" OnSubmitSuccess="HandleSubmitSuccess" />
+}
+@code {
+	public ToDo? ToDo { get; set; } = new();
+
+	[Parameter]
+	public int Id { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		var appDbContext = await AppDbContextFactory.CreateDbContextAsync();
+		ToDo = await appDbContext.ToDos.FindAsync(Id);
+	}
+	private void HandleSubmitSuccess(Modify args)
+	{
+		NavigationManager.NavigateTo("/");
+	}
+}

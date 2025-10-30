@@ -1,58 +1,11 @@
-﻿@inject IDbContextFactory<AppDbContext> AppDbContextFactory
-
-<h3>New Task</h3>
-
-<EditForm Model="@toDo" OnSubmit="@OnSubmit">
-	<div>
-		<label>
-			Is done
-		</label>
-		<InputCheckbox @bind-Value="toDo.IsDone" disabled="@isBusy" />
-	</div>
-	<div>
-		<label>
-			Description
-		</label>
-		<InputTextArea @bind-Value="toDo.Description" disabled="@isBusy" class="form-control" />
-	</div>
-	<div>
-		<label>
-			Due at
-		</label>
-		<InputDate @bind-Value="toDo.DueAt" disabled="@isBusy" class="form-control" />
-	</div>
-	<button type="submit" disabled="@isBusy" class="btn btn-primary">Create</button>
-	@if (exception is not null)
-	{
-		<div class="text-danger">@exception.Message</div>
-	}
-</EditForm>
+﻿<h3>New Task</h3>
+<Modify ToDo="ToDo" OnSubmitSuccess="HandleSumbmitSuccess" />
 
 @code {
-	private ToDo toDo = new ToDo();
-	private bool isBusy = false;
-	private Exception? exception;
+	public ToDo ToDo { get; set; } = new();
 
-	private async Task OnSubmit()
+	public void HandleSumbmitSuccess(Modify modify)
 	{
-		try
-		{
-			isBusy = true;
-			exception = null;
-			using var appDbContext = await AppDbContextFactory.CreateDbContextAsync();
-			await appDbContext.ToDos.AddAsync(toDo);
-			await appDbContext.SaveChangesAsync();
-			var savedToDo = toDo;
-			toDo = new ToDo();
-			toDo.IsDone = savedToDo.IsDone;
-		}
-		catch (Exception exception)
-		{
-			this.exception = exception;
-		}
-		finally
-		{
-			isBusy = false;
-		}
+		ToDo = new() { IsDone = modify.ToDo.IsDone };
 	}
 }

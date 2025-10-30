@@ -14,7 +14,7 @@
 				@foreach(var toDo in toDos)
 				{
 					<div class="col">
-						<Display ToDo="toDo" />
+						<Display ToDo="@toDo" />
 					</div>
 				}
             </div>
@@ -27,7 +27,7 @@
 </div>
 
 @code {
-	private IEnumerable<ToDo> toDos;
+	private IEnumerable<ToDo>? toDos;
 	private Exception? exception;
 
 	protected override async Task OnInitializedAsync()
