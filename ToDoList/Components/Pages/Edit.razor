@@ -4,16 +4,22 @@
 
 
 <PageTitle>Modify</PageTitle>
-@if (ToDo is null)
+@if (IsLoading)
 {
 	<p>Loading...</p>
+}
+else if (ToDo is null)
+{
+	<p>Task not found.</p>
 }
 else
 {
 	<Modify Todo="ToDo" OnSubmitSuccess="HandleSubmitSuccess" />
 }
 @code {
-	public ToDo? ToDo { get; set; } = new();
+	public ToDo? ToDo { get; set; }
+
+	public bool IsLoading { get; set; } = true;
 
 	[Parameter]
 	public int Id { get; set; }
@@ -23,6 +29,7 @@ else
 		await base.OnInitializedAsync();
 		var appDbContext = await AppDbContextFactory.CreateDbContextAsync();
 		ToDo = await appDbContext.ToDos.FindAsync(Id);
+		IsLoading = false;
 	}
 	private void HandleSubmitSuccess(Modify args)
 	{
