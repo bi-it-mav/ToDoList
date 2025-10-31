@@ -44,7 +44,6 @@
 			exception = null;
 			ToDo.LastModifiedAt = DateTime.Now;
 			using var appDbContext = await AppDbContextFactory.CreateDbContextAsync();
-			// ToDo.Id == 0;
 
 			if (ToDo.Id == 0)
 			{
