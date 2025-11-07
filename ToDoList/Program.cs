@@ -16,7 +16,8 @@ try
 {
     var maybeConnectionString = builder.Configuration.GetConnectionString("Default") ?? "";
     credentials = (maybeConnectionString, ServerVersion.AutoDetect(maybeConnectionString));
-} catch (MySqlException)
+}
+catch (MySqlException)
 {
     // Used for defining migrations; make sure this matches `docker-compose.yaml` before you run `Add-Migration`.
     credentials = (

@@ -15,7 +15,7 @@
             _subscriptions[key].Add(updateState);
 
             await initTask;
-            
+
             return new Unsubscriber(() =>
             {
                 if (_subscriptions.ContainsKey(key))
@@ -26,7 +26,6 @@
         }
         public async Task NotifyAsync(Type key)
         {
-
             if (_subscriptions.ContainsKey(key))
             {
                 var upadateTasks = _subscriptions[key]

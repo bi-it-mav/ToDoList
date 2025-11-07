@@ -3,49 +3,49 @@
 <h3 class="mb-4">Tasks</h3>
 
 <div>
-	@if (toDos is null)
-	{
-		<div>Loading...</div>
-	}
-	else
-	{
-		<div class="container my-5">
+    @if (toDos is null)
+    {
+        <div>Loading...</div>
+    }
+    else
+    {
+        <div class="container my-5">
             <div class="row row-cols-1 row-cols-md-3 g-4">
-				@foreach(var toDo in toDos)
-				{
-					<div class="col">
-						<Display ToDo="@toDo" />
-					</div>
-				}
+                @foreach (var toDo in toDos)
+                {
+                    <div class="col">
+                        <Display ToDo="@toDo" />
+                    </div>
+                }
             </div>
-		</div>
-	} 
-	@if (exception is not null)
-{
-	<div class="text-danger">@exception.Message</div>
-}
+        </div>
+    }
+    @if (exception is not null)
+    {
+        <div class="text-danger">@exception.Message</div>
+    }
 </div>
 
 @code {
-	private IEnumerable<ToDo>? toDos;
-	private Exception? exception;
+    private IEnumerable<ToDo>? toDos;
+    private Exception? exception;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
-		await LoadDataAsync();	
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LoadDataAsync();
+    }
 
-	private async Task LoadDataAsync()
-	{
-		try
-		{
-			using var appDbContext = await AppDbContextFactory.CreateDbContextAsync();
-			toDos = await appDbContext.ToDos.OrderByDescending(toDo => toDo.LastModifiedAt).ToListAsync();
-		}
-		catch (Exception exception)
-		{
-			this.exception = exception;
-		}
-	}
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            using var appDbContext = await AppDbContextFactory.CreateDbContextAsync();
+            toDos = await appDbContext.ToDos.OrderByDescending(toDo => toDo.LastModifiedAt).ToListAsync();
+        }
+        catch (Exception exception)
+        {
+            this.exception = exception;
+        }
+    }
 }
