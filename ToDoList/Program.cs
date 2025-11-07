@@ -2,12 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using ToDoList.Components;
 using ToDoList.Data;
+using ToDoList.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddSingleton<StateChangeNotifier>();
 
 (string connectionString, ServerVersion serverVersion) credentials;
 try
