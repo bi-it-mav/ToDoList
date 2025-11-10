@@ -4,23 +4,23 @@
     {
         private readonly Dictionary<Type, List<Func<Task>>> _subscriptions = [];
 
-        public async Task<IDisposable> SubscribeAsync(Type key, Func<Task> updateState)
+        public async Task<IDisposable> SubscribeAsync(Type topic, Func<Task> updateState)
         {
             var initTask = updateState.Invoke();
 
-            if (!_subscriptions.ContainsKey(key))
+            if (!_subscriptions.ContainsKey(topic))
             {
-                _subscriptions[key] = [];
+                _subscriptions[topic] = [];
             }
-            _subscriptions[key].Add(updateState);
+            _subscriptions[topic].Add(updateState);
 
             await initTask;
 
             return new Unsubscriber(() =>
             {
-                if (_subscriptions.ContainsKey(key))
+                if (_subscriptions.ContainsKey(topic))
                 {
-                    _subscriptions[key].Remove(updateState);
+                    _subscriptions[topic].Remove(updateState);
                 }
             });
         }
