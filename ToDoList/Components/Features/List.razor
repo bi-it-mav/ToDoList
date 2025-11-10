@@ -1,7 +1,7 @@
-﻿@inject IDbContextFactory<AppDbContext> AppDbContextFactory
+﻿@inherits StateChangeSubscriber
+@inject IDbContextFactory<AppDbContext> AppDbContextFactory
 
 <h3 class="mb-4">Tasks</h3>
-
 <div>
     @if (toDos is null)
     {
@@ -33,13 +33,15 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        await LoadDataAsync();
+
+        await StateChangeSubscribeAsync(typeof(ToDo), LoadDataAsync);
     }
 
     private async Task LoadDataAsync()
     {
         try
         {
+            exception = null;
             using var appDbContext = await AppDbContextFactory.CreateDbContextAsync();
             toDos = await appDbContext.ToDos.OrderByDescending(toDo => toDo.LastModifiedAt).ToListAsync();
         }

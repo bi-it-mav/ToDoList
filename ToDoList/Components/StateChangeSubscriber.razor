@@ -6,7 +6,10 @@
 
     public async Task StateChangeSubscribeAsync(Type topic, Func<Task> updateState)
     {
-        _disposables.Add(await StateChangeNotifier.SubscribeAsync(topic, updateState));
+        _disposables.Add(await StateChangeNotifier.SubscribeAsync(topic, async () => {
+            await updateState();
+            StateHasChanged();
+        }));
     }
 
     public void Dispose()

@@ -1,4 +1,5 @@
 ﻿@inject IDbContextFactory<AppDbContext> AppDbContextFactory
+@inject StateChangeNotifier StateChangeNotifier
 
 <EditForm Model="ToDo" OnSubmit="HandleSubmit">
 	<div>
@@ -56,6 +57,7 @@
 
 			await appDbContext.SaveChangesAsync();
 			await OnSubmitSuccess.InvokeAsync(this);
+            await StateChangeNotifier.NotifyAsync(typeof(ToDo));
 		}
 		catch (Exception exception)
 		{
