@@ -1,27 +1,33 @@
-﻿namespace ToDoList.Services
+﻿using System;
+using System.Collections.Immutable;
+
+namespace ToDoList.Services
 {
     public class StateChangeNotifier
     {
-        private readonly Dictionary<Type, List<Func<Task>>> _subscriptions = [];
+        private ImmutableDictionary<Type, ImmutableSortedSet<Func<Task>>> _subscriptions = ImmutableDictionary<Type, ImmutableSortedSet<Func<Task>>>.Empty;
 
         public async Task<IDisposable> SubscribeAsync(Type topic, Func<Task> updateState)
         {
             var initTask = updateState.Invoke();
 
-            if (!_subscriptions.ContainsKey(topic))
-            {
-                _subscriptions[topic] = [];
-            }
-            _subscriptions[topic].Add(updateState);
+            ImmutableInterlocked.AddOrUpdate(
+                ref _subscriptions,
+                topic,
+                [updateState],
+                (topic, topicSubscriptions) => topicSubscriptions.Add(updateState)
+            );
 
             await initTask;
 
             return new Unsubscriber(() =>
             {
-                if (_subscriptions.ContainsKey(topic))
-                {
-                    _subscriptions[topic].Remove(updateState);
-                }
+                ImmutableInterlocked.AddOrUpdate(
+                    ref _subscriptions,
+                    topic,
+                    [],
+                    (topic, topicSubscriptions) => topicSubscriptions.Remove(updateState)
+                );
             });
         }
         public async Task NotifyAsync(Type key)
