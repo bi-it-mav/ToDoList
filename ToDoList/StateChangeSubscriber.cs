@@ -16,7 +16,9 @@ namespace ToDoList
         {
             var disposable = await StateChangeNotifier.SubscribeAsync(topic, async () => {
                 await updateState();
-                StateHasChanged();
+                await InvokeAsync(() => {
+                    StateHasChanged();
+                });
             });
             ImmutableInterlocked.Update(ref _disposables, disposables => disposables.Add(disposable));
         }

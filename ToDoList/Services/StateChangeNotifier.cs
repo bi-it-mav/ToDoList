@@ -1,9 +1,12 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 
 namespace ToDoList.Services
 {
     public class StateChangeNotifier
     {
+        private readonly ImmutableSortedSet<Func<Task>> emptyTopicSubscriptions = ImmutableSortedSet<Func<Task>>.Empty
+            .WithComparer(Comparer<Func<Task>>.Create(static (a, b) => a.GetHashCode().CompareTo(b.GetHashCode())));
         private ImmutableDictionary<Type, ImmutableSortedSet<Func<Task>>> _subscriptions = ImmutableDictionary<Type, ImmutableSortedSet<Func<Task>>>.Empty;
 
         public async Task<IDisposable> SubscribeAsync(Type topic, Func<Task> updateState)
@@ -13,7 +16,7 @@ namespace ToDoList.Services
             ImmutableInterlocked.AddOrUpdate(
                 ref _subscriptions,
                 topic,
-                [updateState],
+                emptyTopicSubscriptions.Add(updateState),
                 (topic, topicSubscriptions) => topicSubscriptions.Add(updateState)
             );
 
@@ -24,7 +27,7 @@ namespace ToDoList.Services
                 ImmutableInterlocked.AddOrUpdate(
                     ref _subscriptions,
                     topic,
-                    [],
+                    emptyTopicSubscriptions,
                     (topic, topicSubscriptions) => topicSubscriptions.Remove(updateState)
                 );
             });
