@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 
 namespace ToDoList.Services
 {
@@ -32,9 +31,9 @@ namespace ToDoList.Services
         }
         public async Task NotifyAsync(Type key)
         {
-            if (_subscriptions.ContainsKey(key))
+            if (_subscriptions.TryGetValue(key, out ImmutableSortedSet<Func<Task>>? topicSubscriptions))
             {
-                var upadateTasks = _subscriptions[key]
+                var upadateTasks = topicSubscriptions
                     .Select(updateState => updateState())
                     .ToArray();
                 await Task.WhenAll(upadateTasks);
