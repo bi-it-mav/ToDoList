@@ -1,9 +1,17 @@
 ﻿@inject NavigationManager NavigationManager
 
 <div class="card h-100">
-	<div class="card-body">
-		<h5 class="card-title">@(ToDo.IsDone ? "Done" : "To do")</h5>
-		<p class="card-text">@ToDo.Description</p>
+    <div class="card-header">Header</div>
+    <div class="card-body d-flex flex-column">
+        <div class="card-body p-0">
+		    <h5 class="card-title">@(ToDo.IsDone ? "Done" : "To do")</h5>
+		    <p class="card-text">@ToDo.Description</p>
+        </div>
+        <div class="btn-wrapper text-center d-flex justify-content-between mt-2">
+            <button type="button" @onclick="Modify" class="btn btn-secondary">Modify</button>
+            <button type="button" @onclick="Delete" class="btn btn-warning">Delete</button>
+        </div>
+
 	</div>
 	<div class="card-footer">
 		@if (@ToDo.DueAt is not null)
@@ -11,7 +19,6 @@
 			<small class="text-muted">Due: @ToDo.DueAt</small>
 		}
 	</div>
-	<button type="button" @onclick="Modify" class="btn">Modify</button>
 </div>
 
 
@@ -20,4 +27,6 @@
 	public required ToDo ToDo { get; set; }
 
 	void Modify() => NavigationManager.NavigateTo($"/{ToDo.Id}");
+
+    void Delete() => NavigationManager.NavigateTo($"/{ToDo.Id}");
 }
