@@ -8,7 +8,7 @@ namespace ToDoList
     {
         [Inject]
         // `required` does not actually guarantee anything here
-        public required StateChangeNotifier StateChangeNotifier { get; set; }
+        public required StateChangeNotifier<Type> StateChangeNotifier { get; set; }
 
         private ImmutableSortedSet<IDisposable> _disposables = [];
 

@@ -1,5 +1,5 @@
 ﻿@inject IDbContextFactory<AppDbContext> AppDbContextFactory
-@inject StateChangeNotifier StateChangeNotifier
+@inject StateChangeNotifier<Type> StateChangeNotifier
 
 <EditForm Model="ToDo" OnSubmit="HandleSubmit">
 	<div>
