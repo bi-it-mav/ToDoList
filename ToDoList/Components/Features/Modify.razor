@@ -6,24 +6,24 @@
 		<label>
 			Is done
 		</label>
-		<InputCheckbox @bind-Value="ToDo.IsDone" disabled="@isBusy" />
+		<InputCheckbox @bind-Value="ToDo.IsDone" disabled="@_isBusy" />
 	</div>
 	<div>
 		<label>
 			Description
 		</label>
-		<InputTextArea @bind-Value="ToDo.Description" disabled="@isBusy" class="form-control" />
+		<InputTextArea @bind-Value="ToDo.Description" disabled="@_isBusy" class="form-control" />
 	</div>
 	<div>
 		<label>
 			Due at
 		</label>
-		<InputDate @bind-Value="ToDo.DueAt" disabled="@isBusy" class="form-control" />
+		<InputDate @bind-Value="ToDo.DueAt" disabled="@_isBusy" class="form-control" />
 	</div>
-	<button type="submit" disabled="@isBusy" class="btn btn-primary">Save</button>
-	@if (exception is not null)
+	<button type="submit" disabled="@_isBusy" class="btn btn-primary">Save</button>
+	@if (_exception is not null)
 	{
-		<div class="text-danger">@exception.Message</div>
+		<div class="text-danger">@_exception.Message</div>
 	}
 </EditForm>
 
@@ -34,15 +34,15 @@
 	[Parameter]
 	public required EventCallback<Modify> OnSubmitSuccess { get; set; }
 
-	private bool isBusy = false;
-	private Exception? exception;
+	private bool _isBusy = false;
+	private Exception? _exception;
 
 	private async Task HandleSubmit()
 	{
 		try
 		{
-			isBusy = true;
-			exception = null;
+			_isBusy = true;
+			_exception = null;
 			ToDo.LastModifiedAt = DateTime.Now;
 			using var appDbContext = await AppDbContextFactory.CreateDbContextAsync();
 
@@ -61,11 +61,11 @@
 		}
 		catch (Exception exception)
 		{
-			this.exception = exception;
+			_exception = exception;
 		}
 		finally
 		{
-			isBusy = false;
+			_isBusy = false;
 		}
 	}
 }

@@ -3,7 +3,7 @@
 
 <h3 class="mb-4">Tasks</h3>
 <div>
-    @if (toDos is null)
+    @if (_toDos is null)
     {
         <div>Loading...</div>
     }
@@ -11,7 +11,7 @@
     {
         <div class="container my-5">
             <div class="row row-cols-1 row-cols-md-3 g-4">
-                @foreach (var toDo in toDos)
+                @foreach (var toDo in _toDos)
                 {
                     <div class="col">
                         <Display ToDo="@toDo" />
@@ -20,15 +20,15 @@
             </div>
         </div>
     }
-    @if (exception is not null)
+    @if (_exception is not null)
     {
-        <div class="text-danger">@exception.Message</div>
+        <div class="text-danger">@_exception.Message</div>
     }
 </div>
 
 @code {
-    private IEnumerable<ToDo>? toDos;
-    private Exception? exception;
+    private IEnumerable<ToDo>? _toDos;
+    private Exception? _exception;
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,13 +41,13 @@
     {
         try
         {
-            exception = null;
+            _exception = null;
             using var appDbContext = await AppDbContextFactory.CreateDbContextAsync();
-            toDos = await appDbContext.ToDos.OrderByDescending(toDo => toDo.LastModifiedAt).ToListAsync();
+            _toDos = await appDbContext.ToDos.OrderByDescending(toDo => toDo.LastModifiedAt).ToListAsync();
         }
         catch (Exception exception)
         {
-            this.exception = exception;
+            this._exception = exception;
         }
     }
 }
