@@ -60,6 +60,15 @@ namespace ToDoList.Services
             public void Dispose() => _unsubscribe();
         }
 
-        private static Comparer<T> HashCodeComparer<T>() => Comparer<T>.Create(static (a, b) => a.GetHashCode().CompareTo(b.GetHashCode()));
+        private static Comparer<T> HashCodeComparer<T>() =>
+            Comparer<T>.Create(static (a, b) =>
+                (a, b) switch
+                {
+                    (null, null) => 0,
+                    (null, _) => -1,
+                    (_, null) => 1,
+                    _ => a.GetHashCode().CompareTo(b.GetHashCode())
+                }
+            );
     }
 }
