@@ -1,0 +1,11 @@
+﻿@if (Exception is not null)
+{
+    <div class="alert alert-danger" role="alert">
+        <div class="text-danger">Exception: @Exception.FullMessage()</div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Exception? Exception { get; set; }
+}

@@ -20,10 +20,7 @@
             </div>
         </div>
     }
-    @if (_exception is not null)
-    {
-        <div class="text-danger">@_exception.FullMessage()</div>
-    }
+    <ExceptionView Exception="_exception" />
 </div>
 
 @code {
