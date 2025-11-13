@@ -23,7 +23,7 @@
 	<button type="submit" disabled="@_isBusy" class="btn btn-primary">Save</button>
 	@if (_exception is not null)
 	{
-		<div class="text-danger">@_exception.Message</div>
+		<div class="text-danger">@_exception.FullMessage()</div>
 	}
 </EditForm>
 

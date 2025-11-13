@@ -22,7 +22,7 @@
     }
     @if (_exception is not null)
     {
-        <div class="text-danger">@_exception.Message</div>
+        <div class="text-danger">@_exception.FullMessage()</div>
     }
 </div>
 
