@@ -23,6 +23,11 @@ namespace ToDoList
             ImmutableInterlocked.Update(ref _disposables, disposables => disposables.Add(disposable));
         }
 
+        public async Task NotifyAsync(Type topic)
+        {
+            await StateChangeNotifier.NotifyAsync(topic);
+        }
+
         public void Dispose()
         {
             foreach (var dispoasble in _disposables)
