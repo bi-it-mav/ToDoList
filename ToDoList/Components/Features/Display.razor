@@ -1,4 +1,6 @@
 ﻿@inject NavigationManager NavigationManager
+@inject IDbContextFactory<AppDbContext> AppDbContextFactory
+@inject StateChangeNotifier<Type> StateChangeNotifier
 
 <div class="card h-100">
     <div class="card-header">Header</div>
@@ -18,15 +20,34 @@
 		{
 			<small class="text-muted">Due: @ToDo.DueAt</small>
 		}
+        @if (_exception is not null)
+	    {
+		    <div class="text-danger">@_exception.Message</div>
+	    }
 	</div>
 </div>
 
 
 @code {
-	[Parameter]
-	public required ToDo ToDo { get; set; }
+    [Parameter]
+    public required ToDo ToDo { get; set; }
 
-	void Modify() => NavigationManager.NavigateTo($"/{ToDo.Id}");
+    private void Modify() => NavigationManager.NavigateTo($"/{ToDo.Id}");
 
-    void Delete() => NavigationManager.NavigateTo($"/{ToDo.Id}");
+    private Exception? _exception = null;
+
+    private async Task Delete()
+    {
+        try
+        {
+            using var appDbContext = await AppDbContextFactory.CreateDbContextAsync();
+            appDbContext.ToDos.Remove(ToDo);
+            await appDbContext.SaveChangesAsync();
+            await StateChangeNotifier.NotifyAsync(typeof(ToDo));
+        }
+        catch (Exception exception)
+        {
+            _exception = exception;
+        }
+    }
 }
