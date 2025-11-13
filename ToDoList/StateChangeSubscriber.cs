@@ -4,15 +4,15 @@ using ToDoList.Services;
 
 namespace ToDoList
 {
-    public abstract class StateChangeSubscriber : ComponentBase, IDisposable
+    public abstract class StateChangeSubscriber<TTopic> : ComponentBase, IDisposable where TTopic : notnull
     {
         [Inject]
         // `required` does not actually guarantee anything here
-        public required StateChangeNotifier<Type> StateChangeNotifier { get; set; }
+        public required StateChangeNotifier<TTopic> StateChangeNotifier { get; set; }
 
         private ImmutableSortedSet<IDisposable> _disposables = [];
 
-        public async Task StateChangeSubscribeAsync(Type topic, Func<Task> updateState)
+        public async Task StateChangeSubscribeAsync(TTopic topic, Func<Task> updateState)
         {
             var disposable = await StateChangeNotifier.SubscribeAsync(topic, async () => {
                 await updateState();
@@ -23,7 +23,7 @@ namespace ToDoList
             ImmutableInterlocked.Update(ref _disposables, disposables => disposables.Add(disposable));
         }
 
-        public async Task NotifyAsync(Type topic)
+        public async Task NotifyAsync(TTopic topic)
         {
             await StateChangeNotifier.NotifyAsync(topic);
         }
