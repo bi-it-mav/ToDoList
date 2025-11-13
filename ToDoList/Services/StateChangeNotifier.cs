@@ -8,38 +8,48 @@ namespace ToDoList.Services
             .WithComparer(Comparer<Func<Task>>.Create(static (a, b) => a.GetHashCode().CompareTo(b.GetHashCode())));
         private ImmutableDictionary<TTopic, ImmutableSortedSet<Func<Task>>> _subscriptions = ImmutableDictionary<TTopic, ImmutableSortedSet<Func<Task>>>.Empty;
 
-        public async Task<IDisposable> SubscribeAsync(TTopic topic, Func<Task> updateState)
+
+        public async Task<IDisposable> SubscribeAsync(TTopic topic, Func<Task> updateState) => await SubscribeAsync([topic], updateState);
+        public async Task<IDisposable> SubscribeAsync(IImmutableSet<TTopic> topics, Func<Task> updateState)
         {
             var initTask = updateState.Invoke();
 
-            ImmutableInterlocked.AddOrUpdate(
-                ref _subscriptions,
-                topic,
-                EmptyTopicSubscriptions.Add(updateState),
-                (topic, topicSubscriptions) => topicSubscriptions.Add(updateState)
-            );
+            foreach (var topic in topics)
+            {
+                ImmutableInterlocked.AddOrUpdate(
+                    ref _subscriptions,
+                    topic,
+                    EmptyTopicSubscriptions.Add(updateState),
+                    (topic, topicSubscriptions) => topicSubscriptions.Add(updateState)
+                );
+            }
 
             await initTask;
 
             return new Unsubscriber(() =>
             {
-                ImmutableInterlocked.AddOrUpdate(
-                    ref _subscriptions,
-                    topic,
-                    EmptyTopicSubscriptions,    
-                    (topic, topicSubscriptions) => topicSubscriptions.Remove(updateState)
-                );
+                foreach (var topic in topics)
+                {
+                    ImmutableInterlocked.AddOrUpdate(
+                        ref _subscriptions,
+                        topic,
+                        EmptyTopicSubscriptions,    
+                        (topic, topicSubscriptions) => topicSubscriptions.Remove(updateState)
+                    );
+                }
             });
         }
-        public async Task NotifyAsync(TTopic topic)
+
+        public async Task NotifyAsync(TTopic topic) => await NotifyAsync([topic]);
+        public async Task NotifyAsync(IImmutableSet<TTopic> topics)
         {
-            if (_subscriptions.TryGetValue(topic, out ImmutableSortedSet<Func<Task>>? topicSubscriptions))
-            {
-                var upadateTasks = topicSubscriptions
-                    .Select(updateState => updateState())
-                    .ToArray();
-                await Task.WhenAll(upadateTasks);
-            }
+            var upadateFunctions = topics
+                .SelectMany(topic => _subscriptions.GetValueOrDefault(topic, EmptyTopicSubscriptions))
+                .ToImmutableSortedSet();
+            var upadateTasks = upadateFunctions
+                .Select(updateState => updateState())
+                .ToArray();
+            await Task.WhenAll(upadateTasks);
         }
 
         private class Unsubscriber(Action unsubscribe) : IDisposable

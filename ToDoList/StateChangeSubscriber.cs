@@ -12,9 +12,10 @@ namespace ToDoList
 
         private ImmutableSortedSet<IDisposable> _disposables = [];
 
-        public async Task StateChangeSubscribeAsync(TTopic topic, Func<Task> updateState)
+        public async Task StateChangeSubscribeAsync(TTopic topic, Func<Task> updateState) => await StateChangeSubscribeAsync([topic], updateState);
+        public async Task StateChangeSubscribeAsync(IImmutableSet<TTopic> topics, Func<Task> updateState)
         {
-            var disposable = await StateChangeNotifier.SubscribeAsync(topic, async () => {
+            var disposable = await StateChangeNotifier.SubscribeAsync(topics, async () => {
                 await updateState();
                 await InvokeAsync(() => {
                     StateHasChanged();
@@ -23,9 +24,10 @@ namespace ToDoList
             ImmutableInterlocked.Update(ref _disposables, disposables => disposables.Add(disposable));
         }
 
-        public async Task NotifyAsync(TTopic topic)
+        public async Task NotifyAsync(TTopic topic) => await NotifyAsync([topic]);
+        public async Task NotifyAsync(IImmutableSet<TTopic> topics)
         {
-            await StateChangeNotifier.NotifyAsync(topic);
+            await StateChangeNotifier.NotifyAsync(topics);
         }
 
         public void Dispose()
