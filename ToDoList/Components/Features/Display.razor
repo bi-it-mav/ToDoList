@@ -3,19 +3,23 @@
 @inject StateChangeNotifier<Type> StateChangeNotifier
 
 <div class="card h-100">
-    <div class="card-header">Header</div>
+    @{
+        (string bg, string text, string content) vars = ToDo.IsDone ?
+            ("bg-success-subtle", "text-success-emphasis", "Done") :
+            ("bg-primary-subtle", "text-primary-emphasis", "To do");
+    }
+    <div class="card-header @vars.bg @vars.text">@vars.content</div>
     <div class="card-body d-flex flex-column">
         <div class="card-body p-0">
-		    <h5 class="card-title">@(ToDo.IsDone ? "Done" : "To do")</h5>
 		    <p class="card-text">@ToDo.Description</p>
         </div>
         <div class="btn-wrapper text-center d-flex justify-content-between mt-2">
-            <button type="button" @onclick="Modify" class="btn btn-secondary">Modify</button>
-            <button type="button" @onclick="Delete" class="btn btn-warning">Delete</button>
+            <button type="button" @onclick="Modify" class="btn btn-outline-primary">Modify</button>
+            <button type="button" @onclick="Delete" class="btn btn-outline-danger">Delete</button>
         </div>
 
 	</div>
-	<div class="card-footer">
+	<div class="card-footer @vars.bg @vars.text">
 		@if (@ToDo.DueAt is not null)
 		{
 			<small class="text-muted">Due: @ToDo.DueAt</small>
