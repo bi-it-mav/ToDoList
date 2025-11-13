@@ -1,17 +1,23 @@
-﻿namespace ToDoList
+﻿using System.Collections.Immutable;
+
+namespace ToDoList
 {
     public static class Util
     {
         public static string FullMessage(this Exception? exception)
         {
-            var messages = new List<string>();
-            var currentException = exception;
-            while (currentException != null)
+            (ImmutableList<string> accumulator, Exception? pointer) state = (
+                accumulator: [],
+                pointer: exception
+            );
+            while (state.pointer is not null)
             {
-                messages.Add(currentException.Message);
-                currentException = currentException.InnerException;
+                state = (
+                    accumulator: state.accumulator.Add(state.pointer.Message),
+                    pointer: state.pointer.InnerException
+                );
             }
-            return string.Join(" → ", messages);
+            return string.Join(" → ", state.accumulator);
         }
     }
 }
