@@ -31,9 +31,9 @@ namespace ToDoList.Services
                 );
             });
         }
-        public async Task NotifyAsync(TTopic key)
+        public async Task NotifyAsync(TTopic topic)
         {
-            if (_subscriptions.TryGetValue(key, out ImmutableSortedSet<Func<Task>>? topicSubscriptions))
+            if (_subscriptions.TryGetValue(topic, out ImmutableSortedSet<Func<Task>>? topicSubscriptions))
             {
                 var upadateTasks = topicSubscriptions
                     .Select(updateState => updateState())
