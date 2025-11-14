@@ -21,7 +21,7 @@
 		<InputDate @bind-Value="ToDo.DueAt" disabled="@_isBusy" class="form-control" />
 	</div>
 	<button type="submit" disabled="@_isBusy" class="btn btn-primary">Save</button>
-    <ExceptionView Exception="_exception" />
+    <ExceptionAlert Exception="_exception" />
 </EditForm>
 
 @code {
@@ -29,7 +29,7 @@
 	public required ToDo ToDo { get; set; }
 
 	[Parameter]
-	public required EventCallback<Modify> OnSubmitSuccess { get; set; }
+    public required EventCallback<ModifyToDo> OnSubmitSuccess { get; set; }
 
 	private bool _isBusy = false;
 	private Exception? _exception;

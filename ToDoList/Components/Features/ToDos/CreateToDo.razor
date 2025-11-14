@@ -1,10 +1,10 @@
 ﻿<h3>New Task</h3>
-<Modify ToDo="ToDo" OnSubmitSuccess="HandleSumbmitSuccess" />
+<ModifyToDo ToDo="ToDo" OnSubmitSuccess="HandleSumbmitSuccess" />
 
 @code {
 	public ToDo ToDo { get; set; } = new();
 
-	public void HandleSumbmitSuccess(Modify modify)
+    public void HandleSumbmitSuccess(ModifyToDo modify)
 	{
 		ToDo = new() { IsDone = modify.ToDo.IsDone };
 	}

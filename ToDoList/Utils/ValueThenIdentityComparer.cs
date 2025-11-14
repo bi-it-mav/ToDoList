@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ToDoList
+namespace ToDoList.Utils
 {
     public sealed class ValueThenIdentityComparer<T> : IComparer<T>, IEquatable<ValueThenIdentityComparer<T>> where T : notnull
     {

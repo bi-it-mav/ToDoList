@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using ToDoList.Utils;
 
 namespace ToDoList.Services
 {
@@ -8,8 +9,8 @@ namespace ToDoList.Services
             .WithComparer(ValueThenIdentityComparer<Func<Task>>.Instance);
         private ImmutableDictionary<TTopic, ImmutableSortedSet<Func<Task>>> _subscriptions = ImmutableDictionary<TTopic, ImmutableSortedSet<Func<Task>>>.Empty;
 
-
         public async Task<IDisposable> SubscribeAsync(TTopic topic, Func<Task> updateState) => await SubscribeAsync([topic], updateState);
+
         public async Task<IDisposable> SubscribeAsync(IImmutableSet<TTopic> topics, Func<Task> updateState)
         {
             var initTask = updateState.Invoke();
@@ -41,6 +42,7 @@ namespace ToDoList.Services
         }
 
         public async Task NotifyAsync(TTopic topic) => await NotifyAsync([topic]);
+
         public async Task NotifyAsync(IImmutableSet<TTopic> topics)
         {
             var upadateFunctions = topics

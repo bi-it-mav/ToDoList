@@ -14,13 +14,13 @@
                 @foreach (var toDo in _toDos)
                 {
                     <div class="col">
-                        <Display ToDo="@toDo" />
+                        <DisplayToDo ToDo="@toDo" />
                     </div>
                 }
             </div>
         </div>
     }
-    <ExceptionView Exception="_exception" />
+    <ExceptionAlert Exception="_exception" />
 </div>
 
 @code {

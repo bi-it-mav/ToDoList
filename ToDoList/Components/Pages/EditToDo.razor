@@ -14,7 +14,7 @@ else if (ToDo is null)
 }
 else
 {
-	<Modify Todo="ToDo" OnSubmitSuccess="HandleSubmitSuccess" />
+    <ModifyToDo Todo="ToDo" OnSubmitSuccess="HandleSubmitSuccess" />
 }
 @code {
 	public ToDo? ToDo { get; set; }
@@ -31,7 +31,8 @@ else
 		ToDo = await appDbContext.ToDos.FindAsync(Id);
 		IsLoading = false;
 	}
-	private void HandleSubmitSuccess(Modify args)
+
+    private void HandleSubmitSuccess(ModifyToDo args)
 	{
 		NavigationManager.NavigateTo("/");
 	}

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
 
-namespace ToDoList
+namespace ToDoList.Utils
 {
-    public static class Util
+    public static class ExceptionExtensions
     {
         public static string FullMessage(this Exception? exception)
         {
