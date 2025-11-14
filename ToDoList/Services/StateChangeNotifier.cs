@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Linq;
 using ToDoList.Utils;
 
 namespace ToDoList.Services
@@ -47,8 +48,8 @@ namespace ToDoList.Services
         {
             var upadateFunctions = topics
                 .ToImmutableSortedSet(ValueThenIdentityComparer<TTopic>.Instance)
-                .SelectMany(topic => _subscriptions.GetValueOrDefault(topic, EmptyTopicSubscriptions))
-                .ToImmutableSortedSet();
+                .Select(topic => _subscriptions.GetValueOrDefault(topic, EmptyTopicSubscriptions))
+                .Aggregate(EmptyTopicSubscriptions, (acc, fs) => acc.Union(fs));
             var upadateTasks = upadateFunctions
                 .Select(updateState => updateState())
                 .ToArray();
