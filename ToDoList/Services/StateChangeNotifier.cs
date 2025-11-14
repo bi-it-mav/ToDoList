@@ -5,7 +5,7 @@ namespace ToDoList.Services
     public class StateChangeNotifier<TTopic> where TTopic : notnull
     {
         private static readonly ImmutableSortedSet<Func<Task>> EmptyTopicSubscriptions = ImmutableSortedSet<Func<Task>>.Empty
-            .WithComparer(HashCodeComparer<Func<Task>>());
+            .WithComparer(ValueThenIdentityComparer<Func<Task>>.Instance);
         private ImmutableDictionary<TTopic, ImmutableSortedSet<Func<Task>>> _subscriptions = ImmutableDictionary<TTopic, ImmutableSortedSet<Func<Task>>>.Empty;
 
 
@@ -44,7 +44,7 @@ namespace ToDoList.Services
         public async Task NotifyAsync(IImmutableSet<TTopic> topics)
         {
             var upadateFunctions = topics
-                .ToImmutableSortedSet(HashCodeComparer<TTopic>())
+                .ToImmutableSortedSet(ValueThenIdentityComparer<TTopic>.Instance)
                 .SelectMany(topic => _subscriptions.GetValueOrDefault(topic, EmptyTopicSubscriptions))
                 .ToImmutableSortedSet();
             var upadateTasks = upadateFunctions
@@ -59,16 +59,5 @@ namespace ToDoList.Services
 
             public void Dispose() => _unsubscribe();
         }
-
-        private static Comparer<T> HashCodeComparer<T>() =>
-            Comparer<T>.Create(static (a, b) =>
-                (a, b) switch
-                {
-                    (null, null) => 0,
-                    (null, _) => -1,
-                    (_, null) => 1,
-                    _ => a.GetHashCode().CompareTo(b.GetHashCode())
-                }
-            );
     }
 }
