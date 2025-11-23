@@ -7,7 +7,8 @@ namespace ToDoList.Services
     {
         private static readonly ImmutableSortedSet<Func<Task>> EmptyTopicSubscriptions = ImmutableSortedSet<Func<Task>>.Empty
             .WithComparer(ValueThenIdentityComparer<Func<Task>>.Instance);
-        private ImmutableDictionary<TTopic, ImmutableSortedSet<Func<Task>>> _subscriptions = ImmutableDictionary<TTopic, ImmutableSortedSet<Func<Task>>>.Empty;
+        
+        private Atomic<ImmutableDictionary<TTopic, ImmutableSortedSet<Func<Task>>>> _subscriptions = new([]);
 
         public async Task<IDisposable> SubscribeAsync(TTopic topic, Func<Task> updateState) => await SubscribeAsync([topic], updateState);
 
@@ -17,12 +18,13 @@ namespace ToDoList.Services
 
             foreach (var topic in topics)
             {
-                ImmutableInterlocked.AddOrUpdate(
-                    ref _subscriptions,
-                    topic,
-                    EmptyTopicSubscriptions.Add(updateState),
-                    (topic, topicSubscriptions) => topicSubscriptions.Add(updateState)
-                );
+                _subscriptions.Update(dict => {
+                    if (dict.TryGetValue(topic, out var topicSubscriptions))
+                    {
+                        return dict.Add(topic, topicSubscriptions.Add(updateState));
+                    }    
+                    return dict.Add(topic, EmptyTopicSubscriptions.Add(updateState)); 
+                });
             }
 
             await initTask;
@@ -31,12 +33,19 @@ namespace ToDoList.Services
             {
                 foreach (var topic in topics)
                 {
-                    ImmutableInterlocked.AddOrUpdate(
-                        ref _subscriptions,
-                        topic,
-                        EmptyTopicSubscriptions,    
-                        (topic, topicSubscriptions) => topicSubscriptions.Remove(updateState)
-                    );
+                    _subscriptions.Update(dict =>
+                    {
+                        if (dict.TryGetValue(topic, out var topicSubscriptions))
+                        {
+                            var updatedTopicSubscriptions = topicSubscriptions.Remove(updateState);
+                            if (updatedTopicSubscriptions.IsEmpty)
+                            {
+                                return dict.Remove(topic);
+                            }
+                            return dict.Add(topic, updatedTopicSubscriptions);
+                        }
+                        return dict;
+                    });
                 }
             });
         }
@@ -47,7 +56,7 @@ namespace ToDoList.Services
         {
             var upadateFunctions = topics
                 .ToImmutableSortedSet(ValueThenIdentityComparer<TTopic>.Instance)
-                .Select(topic => _subscriptions.GetValueOrDefault(topic, EmptyTopicSubscriptions))
+                .Select(topic => _subscriptions.Value.GetValueOrDefault(topic, EmptyTopicSubscriptions))
                 .Aggregate(EmptyTopicSubscriptions, (acc, fs) => acc.Union(fs));
             var upadateTasks = upadateFunctions
                 .Select(updateState => updateState())
