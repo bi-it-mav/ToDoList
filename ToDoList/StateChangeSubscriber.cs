@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.Collections.Immutable;
 using ToDoList.Services;
+using ToDoList.Utils;
 
 namespace ToDoList
 {
@@ -10,7 +11,8 @@ namespace ToDoList
         // `required` does not actually guarantee anything here
         public required StateChangeNotifier<TTopic> StateChangeNotifier { get; set; }
 
-        private ImmutableSortedSet<IDisposable> _disposables = [];
+        private ImmutableSortedSet<IDisposable> _disposables = ImmutableSortedSet<IDisposable>.Empty
+            .WithComparer(ValueThenIdentityComparer<IDisposable>.Instance);
 
         public async Task StateChangeSubscribeAsync(TTopic topic, Func<Task> updateState) => await StateChangeSubscribeAsync([topic], updateState);
         public async Task StateChangeSubscribeAsync(IImmutableSet<TTopic> topics, Func<Task> updateState)
