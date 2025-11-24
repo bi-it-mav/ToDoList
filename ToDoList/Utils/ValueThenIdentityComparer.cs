@@ -12,8 +12,11 @@ namespace ToDoList.Utils
             if (x is null) return -1;
             if (y is null) return 1;
             if (EqualityComparer<T>.Default.Equals(x, y)) return 0;
-            return RuntimeHelpers.GetHashCode(x)
-                .CompareTo(RuntimeHelpers.GetHashCode(y));
+            return Comparer<T>.Default.Compare(x, y) switch
+            {
+                0 => RuntimeHelpers.GetHashCode(x).CompareTo(RuntimeHelpers.GetHashCode(y)),
+                int ordering => ordering,
+            };
         }
 
         public bool Equals(ValueThenIdentityComparer<T>? other)
@@ -24,5 +27,14 @@ namespace ToDoList.Utils
 
         public override int GetHashCode()
             => typeof(T).GetHashCode();
+
+        public override string ToString()
+            => $"{nameof(ValueThenIdentityComparer<T>)}<{typeof(T).Name}>";
+
+        public static bool operator ==(ValueThenIdentityComparer<T>? x, ValueThenIdentityComparer<T>? y)
+            => ReferenceEquals(x, y) || (x is not null && y is not null);
+
+        public static bool operator !=(ValueThenIdentityComparer<T>? x, ValueThenIdentityComparer<T>? y)
+            => !(x == y);
     }
 }
