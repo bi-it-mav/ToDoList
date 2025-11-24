@@ -8,7 +8,7 @@ namespace ToDoList.Services
         private static readonly ImmutableSortedSet<Func<Task>> EmptyTopicSubscriptions = ImmutableSortedSet<Func<Task>>.Empty
             .WithComparer(ValueThenIdentityComparer<Func<Task>>.Instance);
         
-        private Atomic<ImmutableDictionary<TTopic, ImmutableSortedSet<Func<Task>>>> _subscriptions = new([]);
+        private readonly Atomic<ImmutableDictionary<TTopic, ImmutableSortedSet<Func<Task>>>> _subscriptions = new([]);
 
         public async Task<IDisposable> SubscribeAsync(TTopic topic, Func<Task> updateState) => await SubscribeAsync([topic], updateState);
 
